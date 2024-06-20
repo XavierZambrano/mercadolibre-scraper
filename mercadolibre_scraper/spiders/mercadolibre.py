@@ -5,11 +5,6 @@ from mercadolibre_scraper.items import Product
 
 class MercadolibreSpider(scrapy.Spider):
     name = "mercadolibre"
-    start_urls = ["https://listado.mercadolibre.com.mx/coffee"]
-
-    query = 'coffee'
-    limit_per_query = 100
-    country = 'mx'
     valid_countries = {
         'ar': 'https://listado.mercadolibre.com.ar/',
         'bo': 'https://listado.mercadolibre.com.bo/',
@@ -31,9 +26,19 @@ class MercadolibreSpider(scrapy.Spider):
         've': 'https://listado.mercadolibre.com.ve/',
     }
 
+    def __init__(self, query, country, *args, **kwargs):
+        super(MercadolibreSpider, self).__init__(*args, **kwargs)
+        if country.lower() not in self.valid_countries:
+            raise ValueError(f"Country '{country}' not supported, please use one of {', '.join(self.valid_countries.keys())}")
+        if not query:
+            raise ValueError("Query is required")
+        query_formatted = query.replace(' ', '-')
+        domain = self.valid_countries[country]
+        self.start_urls = [f'{domain}{query_formatted}']
+
     def parse(self, response):
         # The xpath not works for all the types of search results
-        product_urls = response.xpath('//li[@class="ui-search-layout__item"]//div[@class="ui-search-item__group ui-search-item__group--title"]/a/@href').getall()
+        product_urls = response.xpath('//li[contains(@class, "ui-search-layout__item")]//div[@class="ui-search-item__group ui-search-item__group--title"]/a/@href').getall()
         for url in product_urls:
             yield scrapy.Request(url, callback=self.parse_product)
 
