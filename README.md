@@ -27,3 +27,6 @@ For more information about scrapy crawl arguments, check the [Scrapy documentati
 ### Notes
 - In the variable `data` exists a lot of data, I've only used a small part of it. If you want extract more data, check the `data` variable, [example data variable value](test/mercadolibre_MLM24566773.json).
 - The scraper is not perfect, was created in a few hours and lacks of tests.
+- TODO/Improvements:
+  - Go to the next page of the search results.
+  - Add argument limit_per_query, to limit the number of results per query.
