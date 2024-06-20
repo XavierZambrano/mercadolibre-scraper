@@ -47,7 +47,21 @@ class MercadolibreSpider(scrapy.Spider):
         data = script.split('window.__PRELOADED_STATE__ =')[1]
         data = data.split('};')[0] + '}'
         data = json.loads(data)
+
         sold_stock = data['initialState']['components']['track']['gtm_event'].get('soldStock', None)
+        if data['initialState']['components'].get('reviews_capability_v3'):
+            reviews = data['initialState']['components']['reviews_capability_v3'].get('reviews', [])
+        else:
+            reviews = []
+        if data['initialState']['components'].get('reviews_capability_v3')\
+                and data['initialState']['components']['reviews_capability_v3'].get('rating'):
+            rating = {
+                'average': data['initialState']['components']['reviews_capability_v3']['rating']['average'],
+                'amount': data['initialState']['components']['reviews_capability_v3']['rating']['amount'],
+                'levels': data['initialState']['components']['reviews_capability_v3']['rating']['levels'],
+            }
+        else:
+            rating = None
 
         yield Product(
             url=response.url,
@@ -55,12 +69,8 @@ class MercadolibreSpider(scrapy.Spider):
             name=data['initialState']['components']['header']['title'],
             price=data['initialState']['components']['price']['price']['value'],
             sold_stock=sold_stock,
-            rating={
-                'average': data['initialState']['components']['reviews_capability_v3']['rating']['average'],
-                'amount': data['initialState']['components']['reviews_capability_v3']['rating']['amount'],
-                'levels': data['initialState']['components']['reviews_capability_v3']['rating']['levels'],
-            },
-            reviews=data['initialState']['components']['reviews_capability_v3']['reviews'],
+            rating=rating,
+            reviews=reviews,
             seller=data['initialState']['components']['seller_experiment']['seller'],
             # gallery=data['initialState']['components']['gallery'],
         )
