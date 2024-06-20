@@ -6,7 +6,14 @@
 import scrapy
 
 
-class MercadolibreScraperItem(scrapy.Item):
+class Product(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    id = scrapy.Field()
+    name = scrapy.Field()
+    price = scrapy.Field()
+    sold_stock = scrapy.Field()
+    rating = scrapy.Field()
+    reviews = scrapy.Field()
+    seller = scrapy.Field()
+    # gallery = scrapy.Field()
+
