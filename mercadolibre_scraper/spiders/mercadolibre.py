@@ -50,6 +50,7 @@ class MercadolibreSpider(scrapy.Spider):
         sold_stock = data['initialState']['components']['track']['gtm_event'].get('soldStock', None)
 
         yield Product(
+            url=response.url,
             id=data['initialState']['id'],
             name=data['initialState']['components']['header']['title'],
             price=data['initialState']['components']['price']['price']['value'],
